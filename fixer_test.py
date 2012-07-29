@@ -6,9 +6,13 @@
 
 import unittest
 
+def FixTemplates(source):
+  return source.replace('$(', r'\$(')
+
 
 class FixerTest(unittest.TestCase):
-  pass
+  def testFixDollarSign(self):
+    self.assertEquals(r'stuff \$(foo)', FixTemplates('stuff $(foo)'))
   
   
 if __name__ == '__main__':
