@@ -8,7 +8,7 @@ import unittest
 
 import re
 
-def FixTemplates(source, fragments={}, title=''):
+def FixTemplate(source, fragments={}, title=''):
   """Fixes up RapidWeaver published html files into valid Cheetah templates.
   
   The algorithm is:
@@ -41,22 +41,22 @@ def NeedsConversion(source):
 
 class FixerTest(unittest.TestCase):
   def testFixDollarSign(self):
-    self.assertEquals(r'stuff \$(foo)', FixTemplates('stuff $(foo)'))
+    self.assertEquals(r'stuff \$(foo)', FixTemplate('stuff $(foo)'))
     
   def testReplaceCodeComment(self):
     self.assertEquals('stuff {{code}} stuff',
-                      FixTemplates('stuff <!--code:foo--> stuff',
-                                   fragments={'foo': '{{code}}'}))
+                      FixTemplate('stuff <!--code:foo--> stuff',
+                                  fragments={'foo': '{{code}}'}))
                       
   def testReplace2CodeComments(self):
     self.assertEquals('stuff {{code}} stuff {{morecode}}',
-                      FixTemplates('stuff <!--code:foo--> stuff <!--code:bar-->',
-                                   fragments={'foo': '{{code}}', 'bar': '{{morecode}}'}))
+                      FixTemplate('stuff <!--code:foo--> stuff <!--code:bar-->',
+                                  fragments={'foo': '{{code}}', 'bar': '{{morecode}}'}))
                                    
   def testReplaceTitle(self):
     self.assertEquals('stuff <title>{{code}}| More stuff</title>',
-                      FixTemplates('stuff <title>Events | More stuff</title>',
-                                   title='{{code}}'))
+                      FixTemplate('stuff <title>Events | More stuff</title>',
+                                 title='{{code}}'))
                                    
   def testUnfixed(self):
     self.assertTrue(NeedsConversion('stuff $(badness)'))
