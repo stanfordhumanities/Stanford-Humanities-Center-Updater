@@ -6,13 +6,23 @@
 
 import unittest
 
-def FixTemplates(source):
-  return source.replace('$(', r'\$(')
+import re
+
+def FixTemplates(source, fragments):
+  fixed = source.replace('$(', r'\$(')
+  def GetFragment(matches):
+    return fragments[matches.group(1)]
+  fixed = re.sub(r'<!--code:(\w+)-->', GetFragment, fixed)
+  return fixed
 
 
 class FixerTest(unittest.TestCase):
   def testFixDollarSign(self):
-    self.assertEquals(r'stuff \$(foo)', FixTemplates('stuff $(foo)'))
+    self.assertEquals(r'stuff \$(foo)', FixTemplates('stuff $(foo)', None))
+    
+  def testReplaceCodeComment(self):
+    self.assertEquals('stuff {{code}} stuff',
+                      FixTemplates('stuff <!--code:foo--> stuff', {'foo': '{{code}}'}))
   
   
 if __name__ == '__main__':
