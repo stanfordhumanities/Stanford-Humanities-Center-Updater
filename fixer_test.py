@@ -33,6 +33,7 @@ def FixTemplates(source, fragments={}, title=''):
   fixed = re.sub(r'<!--code:(\w+)-->', GetFragment, fixed)
   return fixed
   
+  
 def NeedsConversion(source):
   """Check source to see if it was just publish by RapidWeaver and not yet fixed."""
   return '<!--code' in source or re.search(r'[^\\]\$\(', source)
