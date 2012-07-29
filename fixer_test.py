@@ -23,6 +23,11 @@ class FixerTest(unittest.TestCase):
   def testReplaceCodeComment(self):
     self.assertEquals('stuff {{code}} stuff',
                       FixTemplates('stuff <!--code:foo--> stuff', {'foo': '{{code}}'}))
+                      
+  def testReplace2CodeComments(self):
+    self.assertEquals('stuff {{code}} stuff {{morecode}}',
+                      FixTemplates('stuff <!--code:foo--> stuff <!--code:bar-->',
+                                   {'foo': '{{code}}', 'bar': '{{morecode}}'}))
   
   
 if __name__ == '__main__':
