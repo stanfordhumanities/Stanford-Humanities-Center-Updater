@@ -144,10 +144,10 @@ def main(argv):
   if fixer.NeedsConversion(wpl_template):
     print "RapidWeaver wrote over workshops/calendar/index.tmpl. Fixing it..."
     fixed_wlp = fixer.FixTemplate(
-        calendar_landing_page_template,
-        fragments={'calendar_landing_page': wlp_fragment,
+        wpl_template,
+        fragments={'workshop_landing_page': wlp_fragment,
                    'minical': minical_fragment,
-                   'list': wpl_list},
+                   'list': wlp_list},
         title='$calendar_title ')
     fm.save(options.output_dir + "workshops/calendar/index.tmpl", fixed_wlp)
   fm.commit()
