@@ -20,6 +20,7 @@ import sys
 import datastore
 import config
 import file_manager
+import fixer
 
 # TODO: Figure out why it creates pages with no events (per month calendars).
 # TODO: Remove workshop events from Events Calendar.
@@ -45,13 +46,14 @@ class PostFlipBook:
     pagenums = range(len(groups))
     pages = zip([None] + pagenums[:-1], pagenums, pagenums[1:] + [None], groups)
     for next_pg_num, current_pg_num, back_pg_num, posts in pages:
-      fm.save(options.output_dir + self.page_uri(current_pg_num), str(Template(file="news-template.tmpl",
-              searchList=[{"posts" : posts,
-                           "pretty_name": self.pretty_name,
-                           "forward_url": self.page_uri(next_pg_num),
-                           "forward_text": "Newer Posts&raquo;",
-                           "back_url": self.page_uri(back_pg_num),
-                           "back_text": "Older Posts"}])))
+      fm.save(options.output_dir + self.page_uri(current_pg_num),
+              str(Template(file=options.output_dir + "news/index.tmpl",
+                           searchList=[{"posts" : posts,
+                                        "pretty_name": self.pretty_name,
+                                        "forward_url": self.page_uri(next_pg_num),
+                                        "forward_text": "Newer Posts&raquo;",
+                                        "back_url": self.page_uri(back_pg_num),
+                                        "back_text": "Older Posts"}])))
 
   def page_uri(self, current_pg_num):
     if current_pg_num is None:
@@ -96,6 +98,21 @@ def parse_args(argv):
 def main(argv):
   options, args = parse_args(argv)
   fm = file_manager.FileManager()
+  with open(options.output_dir + "news-videos/news/index.html", "r") as news_template_file:
+    with open("fragments/news.html", "r") as news_fragment_file:
+      news_fragment = news_fragment_file.read()
+      news_template = news_template_file.read()
+      if fixer.NeedsConversion(news_template):
+        fm.save(options.output_dir + "news-videos/news/index.html.old", news_template)
+        print "Whoop, RapidWeaver wrote over news-videos/news/index.html. Fixing it..."
+        fixed_news = fixer.FixTemplate(news_template, 
+                                       fragments={'news': news_fragment},
+                                       title='$pretty_name ')
+        fm.save(options.output_dir + "news-videos/news/index.tmpl", fixed_news)
+  fm.commit()
+
+  fm = file_manager.FileManager()
+
   ds = datastore.DataStore("database.db")
 
   now = datetime.datetime.now()

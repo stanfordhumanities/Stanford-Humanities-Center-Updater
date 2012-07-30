@@ -1,0 +1,15 @@
+#from snippet import Snippet
+#for $post in $posts
+<a style="font-size:16px; font-weight:bold; " 
+   href="../../$post.uri()">$post.title</a><br /><br />
+   $post.published.strftime("%B %d, %Y")<br><br>
+$Snippet($post.content)
+<a href="../../$post.uri()">More&raquo;</a>
+<br><hr><br>
+#end for
+#if $forward_url and $forward_text
+<div style="float:right"><a href="../../$forward_url">$forward_text</a></div>
+#end if
+#if $back_url and $back_text
+<div><a href="../../$back_url">&laquo;$back_text</a></div>
+#end if

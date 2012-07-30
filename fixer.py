@@ -35,4 +35,4 @@ def FixTemplate(source, fragments={}, title=''):
   
 def NeedsConversion(source):
   """Check source to see if it was just publish by RapidWeaver and not yet fixed."""
-  return '<!--code' in source or re.search(r'[^\\]\$\(', source)
+  return '<!--code' in source and re.search(r'[^\\]\$\(', source)
