@@ -124,6 +124,8 @@ def main(argv):
                                             "events/calendar/index.html")
   clp_fragment = contents("fragments/calendar-landing-page.html")
   minical_fragment = contents("fragments/minical.html")
+  wlp_fragment = contents("fragments/workshop_landing_page.html")
+  wlp_mini_frag = contents("fragments/workshop_landing_mini.html")
   if fixer.NeedsConversion(calendar_landing_page_template):
     fm.save(options.output_dir + "events/calendar/index.html",
             calendar_landing_page_template)
@@ -137,6 +139,16 @@ def main(argv):
         '<a href="./">Calendar</a>',
         '<a href="./">$calendar_title</a>')
     fm.save(options.output_dir + "events/calendar/index.tmpl", fixed_clp)
+
+    fixed_wlp = fixer.FixTemplate(
+        calendar_landing_page_template,
+        fragments={'calendar_landing_page': wlp_fragment,
+                   'minical': wlp_mini_frag},
+        title='$calendar_title ')
+    fixed_wlp = fixed_wlp.replace(
+        '<a href="./">Calendar</a>',
+        '<a href="./">$calendar_title</a>')
+    fm.save(options.output_dir + "workshops/calendar/index.tmpl", fixed_wlp)
   fm.commit()
 
   fm = file_manager.FileManager()
@@ -154,7 +166,8 @@ def main(argv):
                                 landing_page_uri="events/calendar/index.html",
                                 title_prefix="Events")
   all_workshops = CalendarFlipBook(calendar_name="Workshop Calendar",
-                                   landing_page_template="workshop-landing-page.tmpl",
+                                   landing_page_template=options.output_dir +
+                                       "workshops/calendar/index.tmpl",
                                    landing_page_uri="workshops/calendar/index.html",
                                    title_prefix="Workshop Events")
 
