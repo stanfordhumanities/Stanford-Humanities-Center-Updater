@@ -119,6 +119,24 @@ def main(argv):
                                          title='$post.title')
     fm.save(options.output_dir + "news-videos/news/post.tmpl",
             fixed_news_posts)
+
+  calendar_landing_page_template = contents(options.output_dir +
+                                            "events/calendar/index.html")
+  clp_fragment = contents("fragments/calendar-landing-page.html")
+  minical_fragment = contents("fragments/minical.html")
+  if fixer.NeedsConversion(calendar_landing_page_template):
+    fm.save(options.output_dir + "events/calendar/index.html",
+            calendar_landing_page_template)
+    print "RapidWeaver wrote over events/calendar/index.html. Fixing it..."
+    fixed_clp = fixer.FixTemplate(
+        calendar_landing_page_template,
+        fragments={'calendar_landing_page': clp_fragment,
+                   'minical': minical_fragment},
+        title='$calendar_title ')
+    fixed_clp = fixed_clp.replace(
+        '<a href="./">Calendar</a>',
+        '<a href="./">$calendar_title</a>')
+    fm.save(options.output_dir + "events/calendar/index.tmpl", fixed_clp)
   fm.commit()
 
   fm = file_manager.FileManager()
@@ -131,7 +149,8 @@ def main(argv):
   end_date = now + datetime.timedelta(31)
 
   all_events = CalendarFlipBook(calendar_name="Events Calendar",
-                                landing_page_template="calendar-landing-page.tmpl",
+                                landing_page_template=options.output_dir +
+                                    "events/calendar/index.tmpl",
                                 landing_page_uri="events/calendar/index.html",
                                 title_prefix="Events")
   all_workshops = CalendarFlipBook(calendar_name="Workshop Calendar",
@@ -150,7 +169,10 @@ def main(argv):
       landing_page_uri="workshops/calendar/%s.html" % friendly_title(c.calendar_name)
     flipbooks[c.calendar_name] = CalendarFlipBook(calendar_name=c.calendar_name,
                                                   title_prefix=c.calendar_name + " Events",
-                                                  landing_page_template=c.landing_page_template,
+                                                  landing_page_template=(options.output_dir
+                                                    if 'index.tmpl' in
+                                                    c.landing_page_template else
+                                                    '') + c.landing_page_template,
                                                   landing_page_uri=landing_page_uri)
   calendars = [all_events, all_workshops] + flipbooks.values()
 
