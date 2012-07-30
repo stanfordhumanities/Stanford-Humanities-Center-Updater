@@ -124,8 +124,6 @@ def main(argv):
                                             "events/calendar/index.html")
   clp_fragment = contents("fragments/calendar-landing-page.html")
   minical_fragment = contents("fragments/minical.html")
-  wlp_fragment = contents("fragments/workshop_landing_page.html")
-  wlp_mini_frag = contents("fragments/workshop_landing_mini.html")
   if fixer.NeedsConversion(calendar_landing_page_template):
     fm.save(options.output_dir + "events/calendar/index.html",
             calendar_landing_page_template)
@@ -140,14 +138,17 @@ def main(argv):
         '<a href="./">$calendar_title</a>')
     fm.save(options.output_dir + "events/calendar/index.tmpl", fixed_clp)
 
+  wpl_template = contents(options.output_dir + "workshops/calendar/index.html")
+  wlp_fragment = contents("fragments/workshop_landing_page.html")
+  wlp_list = contents('fragments/workshop_landing_list.html')
+  if fixer.NeedsConversion(wpl_template):
+    print "RapidWeaver wrote over workshops/calendar/index.tmpl. Fixing it..."
     fixed_wlp = fixer.FixTemplate(
         calendar_landing_page_template,
         fragments={'calendar_landing_page': wlp_fragment,
-                   'minical': wlp_mini_frag},
+                   'minical': minical_fragment,
+                   'list': wpl_list},
         title='$calendar_title ')
-    fixed_wlp = fixed_wlp.replace(
-        '<a href="./">Calendar</a>',
-        '<a href="./">$calendar_title</a>')
     fm.save(options.output_dir + "workshops/calendar/index.tmpl", fixed_wlp)
   fm.commit()
 
