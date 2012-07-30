@@ -394,7 +394,7 @@ def WriteEventPages(options, fm, events, calendars):
 
 def WritePostPages(options, fm, all_posts):
   for post in all_posts:
-    tmpl = "post-template.tmpl"
+    tmpl = options.output_dir + "news-videos/news/post.tmpl"
     fm.save(options.output_dir + post.uri(),
             str(Template(file=tmpl,
                          searchList=[{"post" : post,
