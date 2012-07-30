@@ -47,7 +47,7 @@ class PostFlipBook:
     pages = zip([None] + pagenums[:-1], pagenums, pagenums[1:] + [None], groups)
     for next_pg_num, current_pg_num, back_pg_num, posts in pages:
       fm.save(options.output_dir + self.page_uri(current_pg_num),
-              str(Template(file=options.output_dir + "news/index.tmpl",
+              str(Template(file=options.output_dir + "news-videos/news/index.tmpl",
                            searchList=[{"posts" : posts,
                                         "pretty_name": self.pretty_name,
                                         "forward_url": self.page_uri(next_pg_num),
