@@ -4,3 +4,4 @@ index.html
 out/
 database.db
 test/
+*.swp
