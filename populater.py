@@ -100,15 +100,24 @@ def main(argv):
   fm = file_manager.FileManager()
   with open(options.output_dir + "news-videos/news/index.html", "r") as news_template_file:
     with open("fragments/news.html", "r") as news_fragment_file:
-      news_fragment = news_fragment_file.read()
-      news_template = news_template_file.read()
-      if fixer.NeedsConversion(news_template):
-        fm.save(options.output_dir + "news-videos/news/index.html.old", news_template)
-        print "Whoop, RapidWeaver wrote over news-videos/news/index.html. Fixing it..."
-        fixed_news = fixer.FixTemplate(news_template, 
-                                       fragments={'news': news_fragment},
-                                       title='$pretty_name ')
-        fm.save(options.output_dir + "news-videos/news/index.tmpl", fixed_news)
+      with open("fragments/news-post.html", "r") as news_posts_fragment_file:
+        news_fragment = news_fragment_file.read()
+        news_posts_fragment = news_posts_fragment_file.read()
+        news_template = news_template_file.read()
+        if fixer.NeedsConversion(news_template):
+          fm.save(options.output_dir + "news-videos/news/index.html.old", news_template)
+          print "Whoop, RapidWeaver wrote over news-videos/news/index.html. Fixing it..."
+          fixed_news = fixer.FixTemplate(news_template, 
+                                         fragments={'news': news_fragment},
+                                         title='$pretty_name ')
+          fm.save(options.output_dir + "news-videos/news/index.tmpl", fixed_news)
+
+          fixed_news_posts = fixer.FixTemplate(news_template,
+                                               fragments={'news':
+                                               news_posts_fragment},
+                                               title='$post.title')
+          fm.save(options.output_dir + "news-videos/news/post.tmpl",
+                  fixed_news_posts)
   fm.commit()
 
   fm = file_manager.FileManager()
