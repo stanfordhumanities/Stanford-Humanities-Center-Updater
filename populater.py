@@ -163,6 +163,8 @@ def main(argv):
         '<a href="shc_event.html">Calendar Event Page</a>',
         '<a href="./">$event.event_title</a>')
     fm.save(options.output_dir + "events/calendar/shc_event.tmpl", fixed_sep)
+    # Also save over the original file, to mark that we've processed it.
+    fm.save(options.output_dir + "events/calendar/shc_event.html", fixed_sep)
 
   wep_template = contents(options.output_dir + "events/calendar/workshop_event.html")
   wep_fragment = contents("fragments/workshop_event.html")
@@ -178,6 +180,8 @@ def main(argv):
         '<a href="workshop_event.html">Workshop Event Page</a>',
         '<a href="./">$event.event_title</a>')
     fm.save(options.output_dir + "events/calendar/workshop_event.tmpl", fixed_wep)
+    # Also save over the original file, to mark that we've processed it.
+    fm.save(options.output_dir + "events/calendar/workshop_event.html", fixed_wep)
   fm.commit()
 
   fm = file_manager.FileManager()
