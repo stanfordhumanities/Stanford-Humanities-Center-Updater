@@ -17,5 +17,5 @@
 #if $event.full_image
 	<img src="$event.full_image" style="padding: 5 px" /> <br>
 #end if
-$event.description
+$event.description.replace("\n", "\n<br/>")
 <br /><hr><br /></span>
