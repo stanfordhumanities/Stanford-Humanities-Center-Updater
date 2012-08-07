@@ -152,7 +152,7 @@ def main(argv):
     calendar.WriteUpcomingEvents(options, fm, calendars, now)
     calendar.WritePerMonthCalendars(options, fm, calendars)
     calendar.WritePerDayCalendars(options, fm, calendars)
-    calendar.WriteMiniCals(options, fm)
+    calendar.WriteMiniCals(options, fm, now)
 
   WriteEventPages(options, fm, events, calendars)  # Move me last
 
@@ -245,9 +245,9 @@ class CalendarFlipBook:
   def __repr__(self):
     return "<Calendar %r>" % self.calendar_name
 
-  def WriteMiniCals(self, options, fm):
-    if self.earliest_date is None or self.latest_date is None:
-      return
+  def WriteMiniCals(self, options, fm, now):
+    self.earliest_date = self.earliest_date or now
+    self.latest_date = self.latest_date or now
     first_day = datetime.datetime(self.earliest_date.year,
                                   self.earliest_date.month,
                                   1)
