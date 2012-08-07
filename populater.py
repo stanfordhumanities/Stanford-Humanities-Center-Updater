@@ -163,6 +163,21 @@ def main(argv):
         '<a href="shc_event.html">Calendar Event Page</a>',
         '<a href="./">$event.event_title</a>')
     fm.save(options.output_dir + "events/calendar/shc_event.tmpl", fixed_sep)
+
+  wep_template = contents(options.output_dir + "events/calendar/workshop_event.html")
+  wep_fragment = contents("fragments/workshop_event.html")
+  wep_list = contents("fragments/workshop_list.html")
+  if fixer.NeedsConversion(wep_template):
+    print "RapidWeaver wrote over events/calendar/workshop_event.tmpl. Fixing it..."
+    fixed_wep = fixer.FixTemplate(
+        wep_template,
+        fragments={'workshop_event': wep_fragment,
+                   'workshop_list': wep_list},
+        title='$event.event_title ')
+    fixed_wep = fixed_wep.replace(
+        '<a href="workshop_event.html">Workshop Event Page</a>',
+        '<a href="./">$event.event_title</a>')
+    fm.save(options.output_dir + "events/calendar/workshop_event.tmpl", fixed_wep)
   fm.commit()
 
   fm = file_manager.FileManager()
@@ -431,7 +446,7 @@ def WriteEventPages(options, fm, events, calendars):
                                 "Test SHC Calendar"):
       tmpl = options.output_dir + "events/calendar/shc_event.tmpl"
     else:
-      tmpl = "workshop_event.tmpl"
+      tmpl = options.output_dir + "events/calendar/workshop_event.tmpl"
     fm.save(options.output_dir + event.uri(),
             str(Template(file=tmpl,
                           searchList=[{"event": event,

@@ -1,0 +1,14 @@
+<span style="font-size:11px; ">$event.calendar_title.upper()</span><br>
+<span style="font-size:14px; font-weight:bold; ">$event.event_title</span>
+<span style="font-size:13px; "><br />
+#if $event.is_all_day
+    $event.start_time.strftime("%A %B %d, %Y")
+#else
+    $event.start_time.strftime("%A %B %d, %Y | %I:%M")
+    #if $event.start_time.strftime("%p") != $event.end_time.strftime("%p")
+        $event.start_time.strftime("%p")
+    #end if
+    $event.end_time.strftime("-%I:%M %p")
+#end if
+| $event.location<br /><br />
+$event.description<br /><hr><br /></span>
