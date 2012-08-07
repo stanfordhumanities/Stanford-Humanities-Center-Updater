@@ -150,6 +150,19 @@ def main(argv):
                    'list': wlp_list},
         title='$calendar_title ')
     fm.save(options.output_dir + "workshops/calendar/index.tmpl", fixed_wlp)
+
+  sep_template = contents(options.output_dir + "events/calendar/shc_event.html")
+  sep_fragment = contents("fragments/shc_event.html")
+  if fixer.NeedsConversion(sep_template):
+    print "RapidWeaver wrote over events/calendar/shc_event.tmpl. Fixing it..."
+    fixed_sep = fixer.FixTemplate(
+        sep_template,
+        fragments={'shc_event': sep_fragment},
+        title='$event.event_title ')
+    fixed_sep = fixed_sep.replace(
+        '<a href="shc_event.html">Calendar Event Page</a>',
+        '<a href="./">$event.event_title</a>')
+    fm.save(options.output_dir + "events/calendar/shc_event.tmpl", fixed_sep)
   fm.commit()
 
   fm = file_manager.FileManager()
@@ -416,7 +429,7 @@ def WriteEventPages(options, fm, events, calendars):
     if event.calendar_title in ("Stanford Humanities Center Events",
                                 "Co-sponsored Events Held at the Humanities Center",
                                 "Test SHC Calendar"):
-      tmpl = "shc_event.tmpl"
+      tmpl = options.output_dir + "events/calendar/shc_event.tmpl"
     else:
       tmpl = "workshop_event.tmpl"
     fm.save(options.output_dir + event.uri(),
