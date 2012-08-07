@@ -101,81 +101,8 @@ def contents(file_name):
 
 def main(argv):
   options, args = parse_args(argv)
-  fm = file_manager.FileManager()
-  news_template = contents(options.output_dir + "news-videos/news/index.html")
-  if fixer.NeedsConversion(news_template):
-    print "Whoop, RapidWeaver wrote over news-videos/news/index.html. Fixing it..."
-    fixed_news = fixer.FixTemplate(news_template, 
-                                   fragments={'news': contents("fragments/news.html")},
-                                   title='$pretty_name ')
-    fm.save(options.output_dir + "news-videos/news/index.tmpl", fixed_news)
 
-    fixed_news_posts = fixer.FixTemplate(news_template,
-                                         fragments={'news': contents("fragments/news-post.html")},
-                                         title='$post.title')
-    fm.save(options.output_dir + "news-videos/news/post.tmpl",
-            fixed_news_posts)
-
-  fragments = {
-    'calendar_landing_page': contents("fragments/calendar-landing-page.html"),
-    'list': contents('fragments/workshop_landing_list.html'),
-    'minical': contents("fragments/minical.html"),
-    'shc_event': contents("fragments/shc_event.html"),
-    'workshop_event': contents("fragments/workshop_event.html"),
-    'workshop_landing_page': contents("fragments/workshop_landing_page.html"),
-    'workshop_list': contents("fragments/workshop_list.html")}
-
-  calendar_landing_page_template = contents(options.output_dir + "events/calendar/index.html")
-  if fixer.NeedsConversion(calendar_landing_page_template):
-    print "RapidWeaver wrote over events/calendar/index.html. Fixing it..."
-    fixed_clp = fixer.FixTemplate(
-        calendar_landing_page_template,
-        fragments=fragments,
-        title='$calendar_title ')
-    fixed_clp = fixed_clp.replace(
-        '<a href="./">Calendar</a>',
-        '<a href="./">$calendar_title</a>')
-    fm.save(options.output_dir + "events/calendar/index.tmpl", fixed_clp)
-
-  wpl_template = contents(options.output_dir + "workshops/calendar/index.html")
-  if fixer.NeedsConversion(wpl_template):
-    print "RapidWeaver wrote over workshops/calendar/index.tmpl. Fixing it..."
-    fixed_wlp = fixer.FixTemplate(
-        wpl_template,
-        fragments=fragments,
-        title='$calendar_title ')
-    fm.save(options.output_dir + "workshops/calendar/index.tmpl", fixed_wlp)
-
-  sep_template = contents(options.output_dir + "events/calendar/shc_event.html")
-  if fixer.NeedsConversion(sep_template):
-    print "RapidWeaver wrote over events/calendar/shc_event.tmpl. Fixing it..."
-    fixed_sep = fixer.FixTemplate(
-        sep_template,
-        fragments=fragments,
-        title='$event.event_title ')
-    fixed_sep = fixed_sep.replace(
-        '<a href="shc_event.html">Calendar Event Page</a>',
-        '<a href="./">$event.event_title</a>')
-    fm.save(options.output_dir + "events/calendar/shc_event.tmpl", fixed_sep)
-    # Also save over the original file, to mark that we've processed it.
-    fm.save(options.output_dir + "events/calendar/shc_event.html", fixed_sep)
-
-  wep_template = contents(options.output_dir + "events/calendar/workshop_event.html")
-  if fixer.NeedsConversion(wep_template):
-    print "RapidWeaver wrote over events/calendar/workshop_event.tmpl. Fixing it..."
-    fixed_wep = fixer.FixTemplate(
-        wep_template,
-        fragments=fragments,
-        title='$event.event_title ')
-    fixed_wep = fixed_wep.replace(
-        '<a href="workshop_event.html">Workshop Event Page</a>',
-        '<a href="./">$event.event_title</a>')
-    fm.save(options.output_dir + "events/calendar/workshop_event.tmpl", fixed_wep)
-    # Also save over the original file, to mark that we've processed it.
-    fm.save(options.output_dir + "events/calendar/workshop_event.html", fixed_wep)
-
-  return
-  fm.commit()
+  FixTemplates(options)
 
   fm = file_manager.FileManager()
 
@@ -240,6 +167,60 @@ def main(argv):
     SanityCheck(fm, options)
 
   #print fm.show_diff()
+  fm.commit()
+
+def FixTemplates(options):
+  fm = file_manager.FileManager()
+  news_template = contents(options.output_dir + "news-videos/news/index.html")
+  if fixer.NeedsConversion(news_template):
+    print "Whoop, RapidWeaver wrote over news-videos/news/index.html. Fixing it..."
+    fixed_news = fixer.FixTemplate(
+        news_template, 
+        fragments={'news': contents("fragments/news.html")},
+        title='$pretty_name ')
+    fm.save(options.output_dir + "news-videos/news/index.tmpl", fixed_news)
+
+    fixed_news_posts = fixer.FixTemplate(
+        news_template,
+        fragments={'news': contents("fragments/news-post.html")},
+        title='$post.title')
+    fm.save(options.output_dir + "news-videos/news/post.tmpl", fixed_news_posts)
+
+  fragments = {
+    'calendar_landing_page': contents("fragments/calendar-landing-page.html"),
+    'list': contents('fragments/workshop_landing_list.html'),
+    'minical': contents("fragments/minical.html"),
+    'shc_event': contents("fragments/shc_event.html"),
+    'workshop_event': contents("fragments/workshop_event.html"),
+    'workshop_landing_page': contents("fragments/workshop_landing_page.html"),
+    'workshop_list': contents("fragments/workshop_list.html")}
+
+  replacements = {
+    '<a href="./">Calendar</a>': '<a href="./">$calendar_title</a>',
+    '<a href="shc_event.html">Calendar Event Page</a>':
+        '<a href="./">$event.event_title</a>',
+    '<a href="workshop_event.html">Workshop Event Page</a>':
+        '<a href="./">$event.event_title</a>'}
+
+  def FixCalendar(source=None, title=None):
+    source_template = contents(options.output_dir + source + ".html")
+    if fixer.NeedsConversion(source_template):
+      print "RapidWeaver wrote over %s.html. Fixing it..." % source
+      fixed_template = fixer.FixTemplate(
+          source_template,
+          fragments=fragments,
+          title=title)
+      for needle, replacement in replacements.iteritems():
+        fixed_template = fixed_template.replace(needle, replacement)
+      fm.save(options.output_dir + source + ".tmpl", fixed_template)
+      # Save over original source file to mark it as processed.
+      fm.save(options.output_dir + source + ".html", fixed_template)
+
+  FixCalendar(source="events/calendar/index", title='$calendar_title ')
+  FixCalendar(source="workshops/calendar/index", title='$calendar_title ')
+  FixCalendar(source="events/calendar/shc_event", title='$event.event_title ')
+  FixCalendar(source="events/calendar/workshop_event", title='$event.event_title ')
+
   fm.commit()
 
 def MyAssert(actual, expected):
