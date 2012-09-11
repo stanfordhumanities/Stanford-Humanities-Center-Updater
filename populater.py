@@ -147,7 +147,7 @@ def main(argv):
     all_events.AddEvent(event, now, end_date)
     all_workshops.AddEvent(event, now, end_date)
     if event.calendar_title in flipbooks:
-      flipbooks[event.calendar_title]=AddEvent(event, now, end_date)
+      flipbooks[event.calendar_title].AddEvent(event, now, end_date)
 
   for calendar in calendars:
     calendar.WriteUpcomingEvents(options, fm, calendars, now)
