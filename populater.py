@@ -146,7 +146,8 @@ def main(argv):
   for event in events:
     all_events.AddEvent(event, now, end_date)
     all_workshops.AddEvent(event, now, end_date)
-    flipbooks[event.calendar_title].AddEvent(event, now, end_date)
+    if event.calendar_title in flipbooks:
+      flipbooks[event.calendar_title]=AddEvent(event, now, end_date)
 
   for calendar in calendars:
     calendar.WriteUpcomingEvents(options, fm, calendars, now)
@@ -175,7 +176,7 @@ def FixTemplates(options):
   if fixer.NeedsConversion(news_template):
     print "Whoop, RapidWeaver wrote over news-videos/news/index.html. Fixing it..."
     fixed_news = fixer.FixTemplate(
-        news_template, 
+        news_template,
         fragments={'news': contents("fragments/news.html")},
         title='$pretty_name ')
     fm.save(options.output_dir + "news-videos/news/index.tmpl", fixed_news)
