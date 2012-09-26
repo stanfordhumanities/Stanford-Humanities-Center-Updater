@@ -185,6 +185,9 @@ def FixTemplates(options):
         news_template,
         fragments={'news': contents("fragments/news-post.html")},
         title='$post.title')
+    # Post pages shouldn't have the <h1>News</h1> markup. Since post pages share
+    # the same template as the news landing page we have to prune it out.
+    fixed_news_posts = fixed_news_posts.replace("<h1>News</h1>", "")
     fm.save(options.output_dir + "news-videos/news/post.tmpl", fixed_news_posts)
 
   fragments = {
